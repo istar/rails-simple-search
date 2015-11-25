@@ -76,7 +76,7 @@ module RailsSimpleSearch
       column = base_class.columns_hash[field.to_s]
 
       if !column.text? && value.is_a?(String)
-        value = column.type_cast(value)
+        value = column.type_cast_from_database(value)
         @criteria[attribute] = value 
       end
 
