@@ -65,6 +65,18 @@ module RailsSimpleSearch
     end
 
     def insert_condition(base_class, attribute, field, value)
+      @conditions ||= []
+      #support scope
+      if attribute == 'scope'
+        key = base_class.send(value).to_sql.split('WHERE').last
+        if @conditions.size < 1
+          @conditions[0] = key
+        else
+          @conditions[0] += " and #{key}"
+        end
+        return
+      end
+
       name_hash = parse_field_name(field)
       field = name_hash[:field_name]
       operator = name_hash[:operator]
@@ -72,7 +84,6 @@ module RailsSimpleSearch
       table = base_class.table_name
       key = "#{table}.#{field}"
   
-      @conditions ||= []
       column = base_class.columns_hash[field.to_s]
 
       if !column.text? && value.is_a?(String)
